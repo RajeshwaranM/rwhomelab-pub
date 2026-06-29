@@ -1,0 +1,38 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US
+  keyboard:
+    layout: us
+  identity:
+    hostname: ubuntu-server
+    username: YOUR_USERNAME
+    password: 'YOUR_HASHED_PASSWORD'
+    # Generate hash with: openssl passwd -6 "your_password"
+  ssh:
+    install-server: true
+    allow-pw: true
+    disable_root: false
+    ssh_quiet_keygen: true
+    allow_public_ssh_keys: true
+  packages:
+    - qemu-guest-agent
+    - sudo
+  #This is the command that will be executed after the installation is complete. It enables the qemu-guest-agent service inside the target system.  
+  late-commands:
+    - curtin in-target --target=/target -- systemctl enable qemu-guest-agent
+  storage:
+    layout:
+      name: direct
+    swap:
+      size: 0
+  user-data:
+    package_upgrade: false
+    timezone: Asia/Kolkata
+    users:
+      - name: YOUR_USERNAME
+        groups: [adm, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        passwd: 'YOUR_HASHED_PASSWORD'
